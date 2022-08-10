@@ -1,13 +1,23 @@
 import { initializeApp } from "firebase/app";
-// FireBase kimligimizi projeye tanitmis olduk.
+// 1) Firebase kimligimizi projeye tanitmis olduk.
 
-// FireBase'in bu mikro kütüphanesi kimlik dogrulama ile ilgili.
+// 1) Firebase'in bu mikro kütüphanesi kimlik dogrulama ile ilgili.
 import {
-  getAuth, // Bir kimlik dogrulama örnegi olusturmak icin getAuth'u cektik.
+  getAuth, // 1) Bir kimlik dogrulama örnegi olusturmak icin getAuth'u cektik.
   signInWithRedirect,
-  signInWithPopup, // birisi yönlendirme ile, öteki acilir pencere ile oturum acmaya yarar.
-  GoogleAuthProvider, // bu da google kimlik dogrulama saglayicisi
+  signInWithPopup, // 1) birisi yönlendirme ile, öteki acilir pencere ile oturum acmaya yarar.
+  GoogleAuthProvider, // 1) bu da google kimlik dogrulama saglayicisi
 } from "firebase/auth";
+
+// 1) Firebase'in bu mikro kütüphanesi veritabani ile ilgili.
+import {
+  getFirestore, // 1) Bir veritabani olusturmak icin getFirestore'u cektik.
+  doc, // 1) Bu "doc" metodu sayesinde firestore veritabanımızdaki belgeleri aliriz.
+  getDoc, // 1) Peki bu verileri nasıl elde ederiz veya bu verileri bu belgelere nasıl yerleştiririz? İşte, getDoc ve setDoc metoduna ihtiyacınız olan kisim burasıdır.
+  setDoc, // 1) Belge verilerini alıyorsak veya ayarlıyorsak, doc gerçekten bir belge örneği elde etmek için ihtiyacınız olan şeydir.
+  // 1) Ancak bu belgelerdeki verilere erişmek istediğimizde getDoc kullanmamız gerekir.
+  // 1) Ve verileri ayarlamak istediğinizde, setDoc'a ihtiyacımız var.
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDLjvpulQ7NCwaylNM1zBy1arEfNj0bibU",
@@ -20,16 +30,40 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 
-// Bu Google kimlik doğrulamasını kullanmak için, önce aldığımız bu GoogleAuthProvider sınıfını kullanarak bir sağlayıcı başlatmamız gerekiyor.
-// new GoogleAuthProvider'i cagiririz, bu da bize bir sağlayıcı örneği dönecek.
-// Daha sonra yapmak isteyeceğimiz set özel parametreleri çağırmak istiyoruz.
+// 1) Bu Google kimlik doğrulamasını kullanmak için, önce aldığımız bu GoogleAuthProvider sınıfını kullanarak bir sağlayıcı başlatmamız gerekiyor.
+// 1) new GoogleAuthProvider'i cagiririz, bu da bize bir sağlayıcı örneği dönecek.
+// 1) Daha sonra yapmak isteyeceğimiz set özel parametreleri çağırmak istiyoruz.
 const provider = new GoogleAuthProvider();
-// Bir sonraki adim. custom parameter denilen bu özel parametreler bir tür yapılandırma nesnesi alir ve bu sayede GoogleAuthProvider'ın nasıl davranmasını istediğimizi belirleriz.
-// Genel olarak isteyeceğimiz davranis tarzi "prompt"dur. Bu, kisiler sağlayıcımızla her etkileşime girdiğinde, onları her zaman bir hesap seçmeye zorlamis oluruz.
+// 1) Bir sonraki adim. custom parameter denilen bu özel parametreler bir tür yapılandırma nesnesi alir ve bu sayede GoogleAuthProvider'ın nasıl davranmasını istediğimizi belirleriz.
+// 1) Genel olarak isteyeceğimiz davranis tarzi "prompt"dur. Bu, kisiler sağlayıcımızla her etkileşime girdiğinde, onları her zaman bir hesap seçmeye zorlamis oluruz.
 provider.setCustomParameters({
   prompt: "select_account",
 });
-// Simdi de kimlik doğrulamamızı dışa aktaralim.
+// 1) Simdi de kimlik doğrulamamızı dışa aktaralim.
 export const auth = getAuth();
-// Simdi de auth ve provider verilerini göndererek pop-up ile giris talep ediyoruz.
+// 1) Simdi de auth ve provider verilerini göndererek pop-up ile giris talep ediyoruz.
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+
+// 2) Simdi veritabanimizi olusturalim.
+export const db = getFirestore();
+// 2) Simdi bunu veritabanımıza erişmek için kullanabiliriz.
+// 2) Bu, veritabanımıza bagli bir belge almak veya ayarlamak istediğimizde Firebase'e haber vermemizi sağlar.
+
+// 2) Simdi bir kullanici belgesi yaratalim.
+// 2) Öncelikle, mevcut bir belge referansı olup olmadığını görmemiz gerekiyor. Burada referanstan kasit, Firestore'un, bir belge modeli örneğinden bahsederken kullandığı özel bir obje türüdür.
+// 2) doc üç parametre alır. İlk parametre veritabanıdır, burada yarattigimiz Firestore veritabanımizi kullanıyoruz.
+// 2) İkincisi koleksiyon olacak. "users" diyelim. Ve üçüncüsü, bir tür tanımlayıcı olacak.
+// 2) 1. derste dönen response adinda bir obje vardi. O obje icerisindeki asil ilgilendigimiz şey, ad, e-posta, doğrulanıp doğrulanmadığı, telefon numarası, fotoğraf URL'si, ama en önemlisi, UID adinda bir kimlik var.
+// 2) Bu, bu objeyle elde ettiğimiz unique yani benzersiz bir kimlik tanımlayıcısıdır, bu nedenle bu UID'yi unique id olarak da kullanabiliriz.
+export const createUserDocumentFromAuth = async (userAuth) => {
+  const userDocRef = doc(db, "users", userAuth.uid); // 2) Yani burada yaptigimiz sey, userAuth.uid'yi belge referansi almak icin unique ID olarak kullanmak.
+  // 2) "Hey, bana belge referansını ver. db isimli veritabanının içinde, userAuth.uid kullanıcı kimliği ile, users koleksiyonunun altında.
+  // 2) Bildigimiz gibi, veritabanımızın içinde bir belge referansımız yok. Bir users koleksiyonumuz bile yok. Ancak yine de Google bu objeyi bizim için oluşturacaktır.
+  console.log(userDocRef); // 2)  Bir obje döner. Bu obje veritabanındaki belge referanslarını temsil eden objedir.
+
+  // 2) Simdi gereken objemizi elde ettigimize göre verileri alma ve kontrol etme sirasi geldi.
+  // 2) Bunun icin getDoc kullanacagiz.
+  const userSnapshot = await getDoc(userDocRef);
+  console.log(userSnapshot); // 2) userSnapShot burada özel bir obje türüne isaret eder. Bu obje türünde bir belgenin var olup olmadigini kontrol etmenin farkli yollari var.
+  console.log(userSnapshot.exists()); // 2) exists burada true ya da false döndürür.
+};
