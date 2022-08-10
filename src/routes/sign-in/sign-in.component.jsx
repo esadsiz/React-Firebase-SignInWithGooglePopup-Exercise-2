@@ -8,7 +8,8 @@ const SignIn = () => {
     // 1) Daha sonra burada response adinda asenkron bir fonksiyon olusturacagiz. Çünkü ne zaman bir veritabanıni cagiracaksak, bu asenkron olmalidir.
     const response = await signInWithGooglePopup();
     console.log(response); // 1) Bu fonksiyon bize kullanici bilgilerini iceren bir obje döndürecektir.
-    createUserDocumentFromAuth(response.user);
+    const userDocRef = await createUserDocumentFromAuth(response.user);
+    console.log(userDocRef);
   };
 
   return (
