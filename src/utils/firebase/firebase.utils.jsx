@@ -11,12 +11,12 @@ import {
 
 // 1) Firebase'in bu mikro kütüphanesi veritabani ile ilgili.
 import {
-  getFirestore, // 1) Bir veritabani olusturmak icin getFirestore'u cektik.
-  doc, // 1) Bu "doc" metodu sayesinde firestore veritabanımızdaki belgeleri aliriz.
-  getDoc, // 1) Peki bu verileri nasıl elde ederiz veya bu verileri bu belgelere nasıl yerleştiririz? İşte, getDoc ve setDoc metoduna ihtiyacınız olan kisim burasıdır.
-  setDoc, // 1) Belge verilerini alıyorsak veya set ediyorsak, doc bir belge örneği elde etmek için ihtiyacınız olan şeydir.
-  // 1) Ancak bu belgelerdeki verilere erişmek istediğimizde getDoc kullanmamız gerekir.
-  // 1) Ve verileri ayarlamak istediğinizde, setDoc'a ihtiyacımız var.
+  getFirestore, // 2) Bir veritabani olusturmak icin getFirestore'u cektik.
+  doc, // 2) Bu "doc" metodu sayesinde firestore veritabanımızdaki belgeleri aliriz.
+  getDoc, // 2) Peki bu verileri nasıl elde ederiz veya bu verileri bu belgelere nasıl yerleştiririz? İşte, getDoc ve setDoc metoduna ihtiyacınız olan kisim burasıdır.
+  setDoc, // 2) Belge verilerini alıyorsak veya set ediyorsak, doc bir belge örneği elde etmek için ihtiyacınız olan şeydir.
+  // 2) Ancak bu belgelerdeki verilere erişmek istediğimizde getDoc kullanmamız gerekir.
+  // 2) Ve verileri ayarlamak istediğinizde, setDoc'a ihtiyacımız var.
 } from "firebase/firestore";
 
 const firebaseConfig = {
